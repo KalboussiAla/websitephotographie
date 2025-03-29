@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Hedi Kalboussi</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="#footer" class="logo">Hedi <span>Kalboussi</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="demandes.html" class="admin-link">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact-page">
+            <h2>Contactez Hedi Kalboussi</h2>
+            
+            <div id="form-alert" class="alert" style="display:none;"></div>
+
+            <form id="contactForm" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Nom et prénom*</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email*</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date de réservation*</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Type de shooting*</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="wedding" name="shooting-type" value="Mariage" required checked>
+                            <label for="wedding">Mariage</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="model" name="shooting-type" value="Mannequin">
+                            <label for="model">Mannequin</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="other" name="shooting-type" value="Autres">
+                            <label for="other">Autres</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Précisez votre demande*</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Envoyer la demande</button>
+            </form>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="social-links">
+            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://pinterest.com" target="_blank"><i class="fab fa-pinterest"></i></a>
+        </div>
+        <p>&copy; <span id="current-year"></span> Hedi Kalboussi Photographie. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+       document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        date_event: document.getElementById('date').value,
+        type: document.querySelector('input[name="shooting-type"]:checked').value,
+        message: document.getElementById('message').value.trim()
+    };
+    
+    // Envoyer les données au serveur
+    fetch('save_request.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(data => {
+        // Message de succès
+        document.getElementById('form-alert').textContent = 'Votre demande a été envoyée avec succès!';
+        document.getElementById('form-alert').className = 'alert success';
+        document.getElementById('form-alert').style.display = 'block';
+        
+        // Réinitialisation du formulaire
+        document.getElementById('contactForm').reset();
+        
+        setTimeout(() => {
+            document.getElementById('form-alert').style.display = 'none';
+        }, 5000);
+    })
+    .catch(error => {
+        document.getElementById('form-alert').textContent = 'Erreur lors de l\'envoi de la demande.';
+        document.getElementById('form-alert').className = 'alert error';
+        document.getElementById('form-alert').style.display = 'block';
+        console.error('Error:', error);
+    });
+});
+    </script>
+</body>
+</html>
